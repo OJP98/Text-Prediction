@@ -8,6 +8,14 @@
 # * Paul Belches - 17088
 
 # %%
+from keras.layers import Embedding
+from keras.layers import LSTM
+from keras.layers import Dense
+from keras.models import Sequential
+from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
+from keras.preprocessing.text import Tokenizer
+from numpy import array
 import random
 import collections
 from wordcloud import WordCloud
@@ -21,6 +29,8 @@ nltk.download('stopwords')
 
 # Definirmos lista de stopwords según nltk
 stopwords = stopwords.words('english')
+
+# Para el modelo
 
 # %% [markdown]
 # ## Importación y limpieza de datos
@@ -62,21 +72,24 @@ with open('./files/en_US.blogs.txt', 'r', encoding='utf-8') as blog_txt:
             for sentence in dotSentences:
                 # Por cada posible oración, debemos quitar los símbolos de puntuación
                 sentence = re.sub(r'[^\w]', ' ', sentence).strip()
-                if len(sentence) > 1: blog.append(sentence)
+                if len(sentence) > 1:
+                    blog.append(sentence)
 
         elif len(excSentences) > 1:
             for sentence in excSentences:
                 sentence = re.sub(r'[^\w]', ' ', sentence)
-                if len(sentence) > 1: blog.append(sentence)
+                if len(sentence) > 1:
+                    blog.append(sentence)
 
         elif len(queSentences) > 1:
             for sentence in queSentences:
                 sentence = re.sub(r'[^\w]', ' ', sentence)
-                if len(sentence) > 1: blog.append(sentence)
+                if len(sentence) > 1:
+                    blog.append(sentence)
 
         elif len(line.split(' ')) > 1:
-                line = re.sub(r'[^\w]', ' ', line).strip()
-                blog.append(line)
+            line = re.sub(r'[^\w]', ' ', line).strip()
+            blog.append(line)
 
 # %% [markdown]
 # #### Caso 2: Noticias
@@ -109,29 +122,32 @@ with open('./files/en_US.news.txt', 'r', encoding='utf-8') as news_txt:
         queSentences = line.split('?')
 
         # Validar y verificar que valga la pena recorrer varias oraciones
-       if len(dotSentences) > 1:
+        if len(dotSentences) > 1:
             for sentence in dotSentences:
                 # Por cada posible oración, debemos quitar los símbolos de puntuación
                 sentence = re.sub(r'[^\w]', ' ', sentence).strip()
-                if len(sentence) > 1: news.append(sentence)
+                if len(sentence) > 1:
+                    news.append(sentence)
 
         elif len(excSentences) > 1:
             for sentence in excSentences:
                 sentence = re.sub(r'[^\w]', ' ', sentence)
-                if len(sentence) > 1: news.append(sentence)
-        
+                if len(sentence) > 1:
+                    news.append(sentence)
+
         elif len(queSentences) > 1:
             for sentence in queSentences:
                 sentence = re.sub(r'[^\w]', ' ', sentence)
-                if len(sentence) > 1: news.append(sentence)
+                if len(sentence) > 1:
+                    news.append(sentence)
 
         elif len(line.split(' ')) > 1:
-        line = re.sub(r'[^\w]', ' ', line).strip()
-        news.append(line)
+            line = re.sub(r'[^\w]', ' ', line).strip()
+            news.append(line)
 
 # %% [markdown]
 # #### Caso 3: Twitter
-# 
+#
 # En este caso, se toma cada distinto tweet como una oración. Es necesario quitar emojis y símbolos como #, $, %, !, @, etc. Además, se quitan urls y se permiten los símbolos: **.** **,** **'**
 
 # %%
@@ -152,7 +168,77 @@ with open('./files/en_US.twitter.txt', 'r', encoding='utf-8') as twitter_txt:
 
 
 # %%
-df = pd.DataFrame(blog + news + tweets, columns=["oraciones"])
-df.to_csv('oraciones.csv', index=False)
+complete_data = blog + news + tweets
+random.shuffle(complete_data)
 
 
+# %%
+data_size = int(len(complete_data)*0.005)
+print('Se va a utilizar ' + str(data_size) + ' datos')
+data = complete_data[:data_size]
+
+# %% [markdown]
+# Crear CSV con las palabras utilizadas para el entrenamiento
+
+# %%
+df = pd.DataFrame(data, columns=["oraciones"])
+df.to_csv('training.csv', index=False)
+
+# %% [markdown]
+# Se genera un tokenizer lo cual es una representacion de enteros de cada palabra en nuestra data.
+
+# %%
+tokenizer = Tokenizer()
+tokenizer.fit_on_texts([data])
+encoded = tokenizer.texts_to_sequences([data])[0]
+
+
+# %%
+# Obtenemos el largo de nuestro vocabulario
+vocab_size = len(tokenizer.word_index) + 1
+
+
+# %%
+# mapeamos 2 palabras a una palabra
+sequences = list()
+for i in range(2, len(encoded)):
+    sequence = encoded[i-2:i+1]
+    sequences.append(sequence)
+
+max_length = max([len(seq) for seq in sequences])
+sequences = pad_sequences(sequences, maxlen=max_length, padding='pre')
+
+# %% [markdown]
+# separamos en los elementos inputs y outputs
+#
+
+# %%
+sequences = array(sequences)
+X, y = sequences[:, :-1], sequences[:, -1]
+y = to_categorical(y, num_classes=vocab_size)
+
+# %% [markdown]
+# Definimos el modelo
+
+# %%
+model = Sequential()
+model.add(Embedding(vocab_size, 10, input_length=max_length-1))
+model.add(LSTM(50))
+model.add(Dense(vocab_size, activation='softmax'))
+print(model.summary())
+
+# %% [markdown]
+# Compilamos el modelo
+
+# %%
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam', metrics=['accuracy'])
+
+
+# %%
+# Entrenaoms el modelo
+model.fit(X, y, epochs=150, verbose=2)
+
+
+# %%
+model.save_weights('deep_no_stopwords')
