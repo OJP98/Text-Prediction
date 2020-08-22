@@ -7,6 +7,7 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Embedding
 from csv import reader
+import numpy as np
 
 NOMBRE_MODELO='testDeep'
 NOMBRE_CSV='oraciones.csv'
@@ -28,7 +29,8 @@ def generate_seq(model, tokenizer, max_length, seed_text, n_words):
 		# ajustamos la secuancia al max_length
 		encoded = pad_sequences([encoded], maxlen=max_length, padding='pre')
 		# predice las probabiliades de cada palabra
-		yhat = model.predict_classes(encoded, verbose=0)
+		
+		yhat=np.argmax(model.predict(encoded), axis=-1)
 		# se pasa del index a la palabra correspondiente
 		out_word = ''
 		for word, index in tokenizer.word_index.items():
@@ -87,11 +89,17 @@ model.add(LSTM(50))
 model.add(Dense(vocab_size, activation='softmax'))
 
 model.load_weights(NOMBRE_MODELO)
+print()
+print('Escriba exit() para salir...')
+print(' o ingrese una frase de mas de dos palabras :)')
+while(True):
+	frase=input('> ')
+	if(frase=='exit()'):
+		break
 
+	prediccion=generate_seq(model, tokenizer, max_length-1, ' '.join(frase.split()[-2:]), 3)
 
-
-print(generate_seq(model, tokenizer, max_length-1, 'woke up', 3))
-print(generate_seq(model, tokenizer, max_length-1, 'I learned', 3))
-print(generate_seq(model, tokenizer, max_length-1, 'I struggled', 3))
+	print(' '.join(prediccion.split()[2:]))
+	print()
 
 
