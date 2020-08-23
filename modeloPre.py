@@ -1,4 +1,12 @@
-# code courtesy of https://nlpforhackers.io/language-models/
+# Basado en https://nlpforhackers.io/language-models/
+
+'''
+	Autores:
+
+	Jose Cifuentes
+	Paul Belches
+	Oscar Juarez
+'''
 
 from nltk.corpus import reuters
 from nltk import bigrams, trigrams
@@ -23,12 +31,7 @@ with open('training.csv', encoding="utf8") as read_obj:
 			continue
 		# row variable is a list that represents a row in csv
 		oraciones.append(row[0].split())
-		#print()
-		#break
-		#contador+=1
 
-
-#print(oraciones)
 
 
 # Create a placeholder for model
@@ -49,18 +52,6 @@ for w1_w2 in model:
 	for w3 in model[w1_w2]:
 		model[w1_w2][w3] /= total_count
 
-
-#Prediccion
-#print(dict(model["today","the"]))
-
-
-
-#print(a)
-'''
-print(a[-1][0])
-print(a[-2][0])
-print(a[-3][0])
-'''
 
 def predecir(entrada):
 	try:

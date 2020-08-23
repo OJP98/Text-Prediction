@@ -1,3 +1,10 @@
+'''
+    Autores:
+
+    Jose Cifuentes
+    Paul Belches
+    Oscar Juarez
+'''
 from numpy import array
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
