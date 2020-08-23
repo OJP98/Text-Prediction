@@ -1,6 +1,11 @@
 # Text-Prediction
 Text prediction model using deep learning techniques.
 
+## Limpieza de los datos
+
+La limpieza de los datos se lleva a cabo en el archivo `script.py` o bien, puede ser ejecutado paso por paso en `script.ipynb` con ayuda de un jupyter notebook. Los datos utilizados no se encuentran en este repositorio, por lo que deben de ser descargados [aquí](https://www.kaggle.com/crmercado/tweets-blogs-news-swiftkey-dataset-4million/). 
+
+**NOTA:** Los archivos de texto deben ser almacenados dentro de este repositorio, en una carpeta llamada *files/* para que el script de python los pueda reconocer fácilmente. 
 
 ## Modelos Implementados
 
