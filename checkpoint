@@ -1,2 +1,2 @@
-model_checkpoint_path: "deep_no_stopwords"
-all_model_checkpoint_paths: "deep_no_stopwords"
+model_checkpoint_path: "Deep1"
+all_model_checkpoint_paths: "Deep1"

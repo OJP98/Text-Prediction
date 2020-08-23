@@ -8,8 +8,8 @@ from keras.layers import LSTM
 from keras.layers import Embedding
 from csv import reader
 
-NOMBRE_CSV='oraciones.csv'
-NOMBRE_MODELO='testDeep'
+NOMBRE_CSV='training.csv'
+NOMBRE_MODELO='Deep1'
 
 
 

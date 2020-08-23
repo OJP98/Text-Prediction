@@ -9,7 +9,7 @@ from keras.layers import Embedding
 from csv import reader
 import numpy as np
 
-NOMBRE_MODELO = 'deep_no_stopwords'
+NOMBRE_MODELO = 'Deep1'
 NOMBRE_CSV = 'training.csv'
 
 '''
