@@ -9,7 +9,7 @@ from csv import reader
 oraciones=[]
 
 # open file in read mode
-with open('tweets.csv', encoding="utf8") as read_obj:
+with open('training.csv', encoding="utf8") as read_obj:
 	# pass the file object to reader() to get the reader object
 	csv_reader = reader(read_obj)
 
@@ -31,26 +31,8 @@ with open('tweets.csv', encoding="utf8") as read_obj:
 #print(oraciones)
 
 
-
-
-
-
-
-
-
 # Create a placeholder for model
 model = defaultdict(lambda: defaultdict(lambda: 0))
-
-'''
-contador=0
-for sentence in reuters.sents():
-	print(sentence)
-	print()
-	contador+=1
-
-	if(contador==2):
-		break
-'''
 
 
 
@@ -71,13 +53,41 @@ for w1_w2 in model:
 #Prediccion
 #print(dict(model["today","the"]))
 
-d=dict(model["i","was"])
 
-a = sorted(d.items(), key=lambda x: x[1])
 
 #print(a)
-
+'''
 print(a[-1][0])
 print(a[-2][0])
 print(a[-3][0])
+'''
 
+def predecir(entrada):
+	try:
+		entradaList=entrada.split()
+		concatenar=''
+
+		for _ in range(3):
+			d=dict(model[entradaList[-2],entradaList[-1]])
+			a = sorted(d.items(), key=lambda x: x[1])
+
+			entradaList.append(a[-1][0])
+
+			concatenar+=a[-1][0]+" "
+
+		return concatenar
+	except:
+		return "Error."
+
+
+
+
+
+print('Escriba exit() para salir...')
+print(' o ingrese una frase de mas de dos palabras :)')
+while(True):
+	frase = input('> ')
+	if(frase == 'exit()'):
+		break
+	print(predecir(frase))    
+	print()
