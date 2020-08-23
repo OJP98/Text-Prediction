@@ -15,8 +15,12 @@ El archivo `training.csv` contiene 10 mil oraciones las cuales fueron usadas par
   Para testear el modelo es necesario correr el script `TestDeepModel.py`, dentro del script podemos especificar el nombre del modelo que queremos cargar. Dentro del repositorio se encuentra el modelo llamado `Deep1` el cual esta listo para ser testeado. 
 
 
-## Requerimientos 
-* numpy
-* keras
-* nltk
-* tensorflow +2.3.0
+## Requerimientos de python
+* **numpy** tipos de datos y procedimientos útiles.U
+* **keras** creación del modelo de dl.
+* **nltk** para interpretación del lenguaje natural.
+* **tensorflow +2.3.0** creación del modelo con redes neuronales
+* **pandas** lectura y escritura de .csv
+* **random** para aleatorizar los datos
+* **matplotlib** para creación de gráficos
+* **re** para expresiones regulares
